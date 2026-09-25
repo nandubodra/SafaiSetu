@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>SafaiSetu — Full Working Integration Guide</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; line-height: 1.55; color: #172033; padding: 0 24px; }
+    h1, h2, h3 { color: #0f172a; }
+    h1 { border-bottom: 3px solid #10b981; padding-bottom: 12px; }
+    code, pre { background: #f1f5f9; border-radius: 6px; }
+    code { padding: 2px 5px; }
+    pre { padding: 14px; overflow-x: auto; white-space: pre-wrap; }
+    .note { background: #ecfdf5; border-left: 4px solid #10b981; padding: 12px 16px; }
+    @media print { body { margin: 0; max-width: none; } h2 { break-before: page; } }
+  </style>
+</head>
+<body>
+  <h1>SafaiSetu — Full Working Integration Guide</h1>
+  <div class="note">Open this file in a browser and use Print → Save as PDF. The detailed step-by-step guide is available in <code>docs/full-working-integration-guide.md</code>.</div>
+  <h2>Goal</h2>
+  <p>Connect the Next.js frontend to the Spring Boot API, MongoDB, JWT authentication, image storage, OTP delivery, AI classification, maps, notifications, verification, analytics, and SLA features.</p>
+  <h2>Implementation order</h2>
+  <ol>
+    <li>Health check and backend startup</li>
+    <li>MongoDB connection</li>
+    <li>OTP and JWT authentication</li>
+    <li>Central frontend API client</li>
+    <li>Complaint creation and listing</li>
+    <li>Authority assignment and status lifecycle</li>
+    <li>Worker resolution evidence</li>
+    <li>Citizen verification</li>
+    <li>Notifications</li>
+    <li>Maps and hotspots</li>
+    <li>AI and duplicate detection</li>
+    <li>Analytics, SLA, testing, and deployment</li>
+  </ol>
+  <h2>Run commands</h2>
+  <pre>cd backend
+./mvnw clean test
+./mvnw spring-boot:run
+
+cd frontend
+npm install
+npm run build
+npm run dev</pre>
+  <h2>Definition of done</h2>
+  <ul>
+    <li>Authentication is real and protected.</li>
+    <li>Complaints persist in MongoDB.</li>
+    <li>Authority and worker workflows update the same complaint.</li>
+    <li>Citizens can verify a resolution.</li>
+    <li>Map, notifications, analytics, and SLA data come from APIs.</li>
+    <li>Secrets, CORS, uploads, OTP, and AI are production-safe.</li>
+  </ul>
+  <p>For the complete endpoint-by-endpoint instructions, read <code>docs/full-working-integration-guide.md</code>.</p>
+</body>
+</html>
