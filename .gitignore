@@ -1,0 +1,7 @@
+# Local environment files
+
+# Frontend
+frontend/.env.local
+
+# Backend secrets and local overrides
+backend/.env

@@ -1,0 +1,19 @@
+{
+  "appName": "सफाईसेतु",
+  "tagline": "नागरिक समस्या रिपोर्टिंग प्लेटफॉर्म",
+  "login": "लॉगिन",
+  "citizenLogin": "नागरिक लॉगिन",
+  "authorityLogin": "प्राधिकरण लॉगिन",
+  "reportIssue": "समस्या रिपोर्ट करें",
+  "viewDashboard": "डैशबोर्ड देखें",
+  "myReports": "मेरी रिपोर्ट्स",
+  "newComplaint": "नई शिकायत",
+  "category": "श्रेणी",
+  "description": "विवरण",
+  "location": "स्थान",
+  "uploadPhoto": "फोटो अपलोड करें",
+  "submitComplaint": "शिकायत सबमिट करें",
+  "language": "भाषा",
+  "analytics": "विश्लेषण",
+  "notificationCenter": "अधिसूचना केंद्र"
+}

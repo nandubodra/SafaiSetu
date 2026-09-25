@@ -1,0 +1,19 @@
+{
+  "appName": "SafaiSetu",
+  "tagline": "Civic issue reporting platform",
+  "login": "Login",
+  "citizenLogin": "Citizen Login",
+  "authorityLogin": "Authority Login",
+  "reportIssue": "Report an Issue",
+  "viewDashboard": "View Dashboard",
+  "myReports": "My Reports",
+  "newComplaint": "New Complaint",
+  "category": "Category",
+  "description": "Description",
+  "location": "Location",
+  "uploadPhoto": "Upload Photo",
+  "submitComplaint": "Submit Complaint",
+  "language": "Language",
+  "analytics": "Analytics",
+  "notificationCenter": "Notification Center"
+}
