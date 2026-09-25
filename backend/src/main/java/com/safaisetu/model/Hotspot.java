@@ -6,16 +6,19 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "slaMetrics")
-public class SlaMetric {
+@Document(collection = "verificationVotes")
+public class VerificationVote {
     @Id
     private String id;
 
     private String complaintId;
-    private String category;
-    private String dueStatus;
-    private Integer overdueDays;
+    private String userId;
+    private String vote;
+    private LocalDateTime createdAt;
+    private Boolean valid;
 }

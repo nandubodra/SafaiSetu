@@ -1,11 +1,9 @@
-package com.safaisetu;
+spring.application.name=safaisetu
+server.port=8080
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+spring.data.mongodb.uri=${MONGODB_URI:mongodb://localhost:27017/safaisetu}
 
-@SpringBootApplication
-public class SafaiSetuApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(SafaiSetuApplication.class, args);
-    }
-}
+logging.level.org.springframework=INFO
+logging.level.com.safaisetu=DEBUG
+
+jwt.secret=${JWT_SECRET:change-me}

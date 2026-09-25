@@ -1,27 +1,11 @@
-package com.safaisetu.model;
+package com.safaisetu.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "users")
-public class User {
-    @Id
-    private String id;
-
-    private String name;
-    private String email;
-    private String phone;
-    private String role; // citizen, authority, admin, worker
-    private String otpCode;
-    private Boolean emailVerified;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+public class AnalyticsSummary {
+    private String label;
+    private String value;
 }

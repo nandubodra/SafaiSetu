@@ -9,13 +9,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "slaMetrics")
-public class SlaMetric {
+@Document(collection = "hotspots")
+public class Hotspot {
     @Id
     private String id;
 
-    private String complaintId;
     private String category;
-    private String dueStatus;
-    private Integer overdueDays;
+    private Double latitude;
+    private Double longitude;
+    private Integer complaintCount;
+    private String severity;
+    private Double radiusInMeters;
 }
