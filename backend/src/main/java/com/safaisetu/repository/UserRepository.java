@@ -1,21 +1,10 @@
-package com.safaisetu.model;
+package com.safaisetu.repository;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import com.safaisetu.model.User;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Document(collection = "slaMetrics")
-public class SlaMetric {
-    @Id
-    private String id;
+import java.util.Optional;
 
-    private String complaintId;
-    private String category;
-    private String dueStatus;
-    private Integer overdueDays;
+public interface UserRepository extends MongoRepository<User, String> {
+    Optional<User> findByEmailIgnoreCase(String email);
 }

@@ -1,57 +1,76 @@
-package com.safaisetu.config;
+package com.safaisetu.controller;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import com.safaisetu.dto.AuthRequest;
+import com.safaisetu.model.User;
+import com.safaisetu.repository.UserRepository;
+import com.safaisetu.security.JwtUtil;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
-@Configuration
-@EnableWebSecurity
-public class SecurityConfig {
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+    private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
+    private final Map<String, OtpEntry> otpStore = new ConcurrentHashMap<>();
+    private final boolean exposeOtp;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .cors(Customizer.withDefaults())
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/dashboard/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/complaints/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/complaints").permitAll()
-                .requestMatchers(HttpMethod.PUT, "/api/complaints/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/notifications/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/notifications").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/hotspots").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/analytics/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/sla").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/ai/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        return http.build();
+    public AuthController(UserRepository userRepository, JwtUtil jwtUtil,
+                          @Value("${otp.expose-in-response:false}") boolean exposeOtp) {
+        this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
+        this.exposeOtp = exposeOtp;
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+    @PostMapping("/send-otp")
+    public ResponseEntity<?> sendOtp(@RequestBody AuthRequest request) {
+        if (request.getEmail() == null || request.getEmail().isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Email is required"));
+        }
+        String role = request.getRole() == null ? "citizen" : request.getRole().toLowerCase();
+        String otp = String.valueOf((int) (Math.random() * 900000) + 100000);
+        otpStore.put(request.getEmail().toLowerCase() + ":" + role, new OtpEntry(otp, LocalDateTime.now().plusMinutes(5)));
+        var response = new java.util.HashMap<String, Object>();
+        response.put("success", true);
+        response.put("message", "OTP sent successfully");
+        if (exposeOtp) response.put("otp", otp);
+        return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(@RequestBody AuthRequest request) {
+        String role = request.getRole() == null ? "citizen" : request.getRole().toLowerCase();
+        String key = request.getEmail().toLowerCase() + ":" + role;
+        OtpEntry entry = otpStore.get(key);
+        if (entry == null || entry.expiresAt().isBefore(LocalDateTime.now()) || !entry.code().equals(request.getOtp())) {
+            return ResponseEntity.status(401).body(Map.of("success", false, "message", "Invalid or expired OTP"));
+        }
+        Optional<User> existing = userRepository.findByEmailIgnoreCase(request.getEmail());
+        User user = existing.orElseGet(() -> {
+            User created = new User();
+            created.setName(request.getName() == null ? "User" : request.getName());
+            created.setEmail(request.getEmail().toLowerCase());
+            created.setRole(role);
+            created.setEmailVerified(true);
+            created.setCreatedAt(LocalDateTime.now());
+            return created;
+        });
+        user.setUpdatedAt(LocalDateTime.now());
+        user.setRole(role);
+        user = userRepository.save(user);
+        otpStore.remove(key);
+        return ResponseEntity.ok(Map.of(
+            "success", true,
+            "token", jwtUtil.generateToken(user.getEmail(), user.getRole()),
+            "user", Map.of("id", user.getId(), "email", user.getEmail(), "role", user.getRole())
+        ));
+    }
+
+    private record OtpEntry(String code, LocalDateTime expiresAt) {}
 }
